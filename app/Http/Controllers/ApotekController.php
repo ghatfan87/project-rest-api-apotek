@@ -63,6 +63,10 @@ class ApotekController extends Controller
                 $total_harga += $harga;
             }
 
+            if (count($harga_satuan) != count($obat)) {
+                return ApiFormatter::createdAPI(400, 'failed', 'Jumlah obat dan Harga Satuan tidak sama');
+            }
+
             $apotek = Apotek::create([
                 'nama' => $request->nama,
                 'rujukan' => $request->rujukan,
@@ -74,12 +78,12 @@ class ApotekController extends Controller
             ]);
 
             $hasilTambahData = Apotek::where('id', $apotek->id)->first();
-            if (count($harga_satuan) != count($obat)) {
-                return ApiFormatter::createdAPI(400, 'failed', 'Jumlah obat dan Harga Satuan tidak sama');
-            }
             if ($hasilTambahData) {
                 return ApiFormatter::createdAPI(200, 'success', $apotek);
             } else {
+                if ($hasilTambahData) {
+                    return ApiFormatter::createdAPI(200, 'success', $apotek);
+                }
                 return ApiFormatter::createdAPI(400, 'failed');
             }
         } catch (Exception $error) {
