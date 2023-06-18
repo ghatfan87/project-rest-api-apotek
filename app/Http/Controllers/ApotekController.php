@@ -174,7 +174,6 @@ class ApotekController extends Controller
     public function deletePermanent($id)
     {
         try {
-            // ambil data yang akan dihps
             $apotek = Apotek::onlyTrashed()->where('id', $id);
             $proses = $apotek->forceDelete();
 
@@ -188,9 +187,14 @@ class ApotekController extends Controller
         }
     }
 
-    public function onlyTrash()
+    public function onlyTrash(Request $request)
     {
         try {
+            $search = $request->search_apoteker;
+            // ambil data dari key limit bagian params nya postman
+            $limit = $request->limit;
+            // ambil semua data melalui model
+            $apotek = Apotek::where('apoteker', 'LIKE', '%' . $search . '%')->limit($limit)->get();
             $apotek = Apotek::onlyTrashed()->get();
             if ($apotek) {
                 return ApiFormatter::createdAPI(200, 'success', $apotek);
